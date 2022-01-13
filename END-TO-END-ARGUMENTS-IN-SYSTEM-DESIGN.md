@@ -4,35 +4,43 @@
 
 ---
 
-### What is the Problem? [Good papers generally solve *a single* problem]
+### The Problem
+<!-- [A single problem] -->
+People at that time are obsessed with "layered" systems and tend to implement redundunt functions all in low-level or subsystems, thinking that performing functions at lower-level will be more efficient. However, several examples and reasons suggest that it might not be the case. Hence, how those functions should be assigned to layers need further rational principles. 
 
-Existing performance debugging methods for complex distributed systems do not provide useful information about end-to-end performance characteristics, because it is challenging to construct an execution model of requests in a highly-distributed heterogeneous system. 
 
-### Summary [Up to 3 sentences]
+### Summary 
+<!-- [Up to 3 sentences] -->
 
-The Mystery Machine analyzes end-to-end request executions in a modern Internet service (Facebook) to automatically infer the request execution model and the performance behavior by making minor changes to the existing logging infrastructure. Mystery Machine relies on the law of large numbers to automatically build causal relationships between the components (segments) of a request. Using the findings of The Mystery Machine, connections with no slack (i.e., room for deferring) can be prioritized to improve their end-to-end latency while connections with enough slack can be deprioritized without harming their end-to-end latency.
+Saltzer, Reed and Clark in their paper proposed a new design principle to guide function placement in a distributed computer system, called the "end-to-end arguments", which is against the tranditional low-level function implementation. They pointed out the potential risks of low-level function implementation, especially in the reliable file transfer system and suggested that end-to-end application level function implementation can be more beneficial. More generally, one should assign functions to proper layers according to the application requirements. 
 
-### Key Insights [Up to 2 insights]
+### Key Insights 
+<!-- [Up to 2 insights] -->
 
-- One can automatically construct a model of request execution by generating a large number of potential hypotheses about program behavior and rejecting the hypotheses contradicted by the empirical observations. This is an example of the more general idea of *iteratively refining likely execution invariants*.
-- Complex performance optimizations in a large scale Internet service can be validated without the actual implementation effort. This is possible by relying on the inherent variability in system behavior that manifests naturally over large number of requests.
+- From the caretaking aspect, implementing functions in the low-level may not be able to completely fulfill the requirements of the upper-level applications, causing potential failures or errors.
+- From the performance aspects, performing the function at low-level may cost more. Low-level may have redundant functions for applications that do not need them; also, the low-level subsystems are unaware of the need of higher level, thus cannot do the job efficiently.
 
-### Notable Design Details/Strengths [Up to 2 details/strengths]
+### Notable Design Details/Strengths 
+<!-- [Up to 2 details/strengths] -->
 
-- UberTrace, which is the end-to-end request tracing component that Mystery Machine relies on, uses sampling to reduce overhead. However, sampling reduces the probability that individual logging systems monitor the same set of requests. In order to perform targeted request monitoring, UberTrace propagates the decision about whether or not to monitor a given request through all logging subsystems along the path of the request.
-- A key strength of The Mystery machine is that it discovers and updates dependencies in a request automatically. This is a key feature because the underlying logging infrastructure is constantly evolving.
+The authors took the file transfer system as an example to illustrate the importance of end-to-end application level function implementation.
+- For the file transfer system, the reliability is ensured by the end-to-end application level function realization, e.g. the checksum and retry/commit plan. Simply making the data communication subsystem reliable is not enough and will cause potential error during file transfer, like the transient error inside a host.
+- From the performance aspect, since the reliability is entirely ensured by the application layer, spending efforts on any point below application level can be less efficient when designing a reliable file transfer system. One should first try to realize a communication system providing reliability with the little cost, then evaluate the error to get an acceptable retry frequency. 
 
-### Limitations/Weaknesses [up to 2 weaknesses]
+### Limitations/Weaknesses 
+<!-- [up to 2 weaknesses] -->
 
-- The Mystery Machine could recompute model changes incrementally rather than from scratch to account for the changes in the request model.
-- The Mystery Machine makes the assumption that the segments in a call graph are acyclic. It is unclear how the system design would need to be changed in the presence of cycles (e.g., what happens when the same <event, task> pair appear more than once in a request trace).
+The paper mainly focuses on the end-to-end argument against the low-level function implemention. However, it is not always true. More applications and conditions should be taken into account to decide whether layers are organized properly. 
 
-### Summary of Key Results [Up to 3 results]
+### Summary of Key Results 
+<!-- [Up to 3 results] -->
 
-- There is significant variation in the contribution of major end-to-end performance components (servers, network, and client) to the critical path. One can use this variation to provide differentiated service (e.g., prioritizing service where the server has no slack, whereas deprioritizing those where network and client latency will likely dominate).
-- Slack tends to remain stable for a given user across multiple Facebook sessions, so past slack information can be used to predict the slack of the current connection.
+- Low-level function implementation may cause potential risks and can be less efficient under certain cases.
+- "End-to-end arguments" serve as a new desgin principle that could improve performance in distributed system design, e.g. reliability file transfer system, delivery guarantees, secure transmission of data, duplicate message suppression, guaranteeing FIFO message delivery and transaction management.
 
-### Open Questions [Where to go from here?]
 
-- The performance properties analyzed by the Mystery machine are fairly high-level. One interesting direction would be to extend this work to gather more information in a targeted way to do more low-level performance debugging (e.g., what code is responsible for the slow down?).
-- The scope of the work can be extended to look into end-to-end performance analysis for mobile platforms in addition to the desktop.
+### Open Questions 
+<!-- [Where to go from here?] -->
+
+End-to-end arguments are only parts of the rational principles for organizing layered systems. Questions about the proper organization, specific criteria, different applications, are still open to discuss.
+
