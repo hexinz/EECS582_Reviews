@@ -31,9 +31,10 @@ Dawson R. Engler, M. Frans Kaashoek, and James O’Toole Jr. designed a new oper
 ### Limitations/Weaknesses 
 <!-- [up to 2 weaknesses] -->
 
-- Designing exokernel interfaces is complex (implementation is not).
-- The exokernel can be less consistency.
-
+<!-- - Designing exokernel interfaces is complex (implementation is not). -->
+<!-- - The exokernel can be less consistency. -->
+- For single-computer system, performance improvements would be great. However, for large-scale systems, it might not be worth it to switch from complex software to more hardware. The design philosophy is hard to scale across other forms of hardware or new hardware technology.
+- Downloading code ino the kernel might not be safe even with Application-specific Safe Handlers (ASHs).
 
 
 ### Summary of Key Results 
@@ -46,5 +47,5 @@ Dawson R. Engler, M. Frans Kaashoek, and James O’Toole Jr. designed a new oper
 ### Open Questions 
 <!-- [Where to go from here?] -->
 
-The problem of consistency caused by different development of applications needs to be solved. Also, more detailed design of the low-level interface that communicates with hardware directly is open to discuss.
+The problems of scalability as well as the safety issues of downloading code into the kernel need to be solved.
 
