@@ -13,7 +13,7 @@ physical resources. In other words, one could hardly modifies implementations of
 ### Summary 
 <!-- [Up to 3 sentences] -->
 
-Dawson R. Engler, M. Frans Kaashoek, and James O’Toole Jr. designed a new operating system architecture called *Exokernel*, which solved the above problems by providing application-level management of physical resources. To securely export hardware resources to applications , exokernel follows the design principle of separting protection from management.
+Dawson R. Engler, M. Frans Kaashoek, and James O’Toole Jr. designed a new operating system architecture called *Exokernel*, which solved the above problems by providing application-level management of physical resources. To securely export hardware resources to applications, exokernel follows the design principle of separting protection from management. It turns out that exokernel is not only easy to implement, but it also allows easy implement of purpose-specific abstractions at application level, thus improving performance, flexibility and functionality. 
 
 ### Key Insights 
 <!-- [Up to 2 insights] -->
