@@ -6,41 +6,45 @@
 
 ### The Problem
 <!-- [A single problem] -->
-People at that time were obsessed with "layered" systems and tend to implement redundant functions all in low-level or subsystems, thinking that performing functions at lower-level will be more efficient. However, several examples and reasons suggest that it might not be the case. Hence, how those functions should be assigned to layers need further rational principles. 
 
+Traditional operating systems have limited performance, flexibility and functionality of applications since they have fixed the interface between applications and
+physical resources. In other words, one could hardly modifies implementations of existing abstractions, adds new abstractions or does any domain-specific optimizations with fixed high-level abstractions.
 
 ### Summary 
 <!-- [Up to 3 sentences] -->
 
-Saltzer, Reed and Clark in their paper proposed a new design principle to guide function placement in a distributed computer system, called the "end-to-end arguments", which is against the traditional low-level function implementation. They pointed out the potential risks of low-level function implementation, especially in the reliable file transfer system and suggested that end-to-end application level function implementation can be more beneficial. More generally, one should assign functions to proper layers according to the application requirements. 
+Dawson R. Engler, M. Frans Kaashoek, and James O’Toole Jr. designed a new operating system architecture called *Exokernel*, which solved the above problems by providing application-level management of physical resources. To securely export hardware resources to applications , exokernel follows the design principle of separting protection from management.
 
 ### Key Insights 
 <!-- [Up to 2 insights] -->
 
-- From the caretaking aspect, implementing functions in the low-level may not be able to completely fulfill the requirements of the upper-level applications, causing potential failures or errors.
-- From the performance aspects, performing the function at low-level may cost more. Low-level may have redundant functions for applications that do not need them; also, the low-level subsystems are unaware of the need of higher level, thus cannot do the job efficiently.
+- Fixed high-level abstractions hurt application performance, hide information from applications, making implementation of own resource management abstractions hard for applications like database, and limit the functionality of applications since they could only use the existing fixed interface.
+- Design principles of exokernel include 1) securely expose hardware: avoid resource management except required by protection), 2) expose allocation: allow library operating systemsto requestspecific physical resources, 3) expose names: exokernels should use physical names wherever possible to be efficient. and 4) expose revocation: utilize a visible resource revocation protocol so that library operating systems can perform effective application-level resource management.
 
 ### Notable Design Details/Strengths 
 <!-- [Up to 2 details/strengths] -->
 
-The authors took the file transfer system as an example to illustrate the importance of end-to-end application level function implementation.
+- To realize application-level management of physical resources, exokernel defines a low-level interface that securely multiplexes available hardware resources. Then, library operating systems, which works above the exokernel interface, implement most of the abstractions at application level so that applications can select libraries or create their own to enhance performance, flexibility and functionality. 
+- To realize separating protection from management design principle, exokernel employes three techinques: 1) secure bindings: applications bind to resources securely through library operating systems; 2) visible resource revocation: library operating systems participate in resource revocation protocol and 3) abort protocol: an exokernel can break secure bindings of unsafe applications by force. Secure binding also includes hardware mechanism for applications to directly access hardware resources, software caching for frequently used secure bindings and downloading application code into the kernel. 
 
-- For the file transfer system, the reliability is ensured by the end-to-end application level function realization, e.g. the checksum and retry/commit plan. Simply making the data communication subsystem reliable is not enough and will cause potential error during file transfer, like the transient error inside a host.
-- From the performance aspect, since the reliability is entirely ensured by the application layer, spending efforts on any point below application level can be less efficient when designing a reliable file transfer system. One should first try to realize a communication system providing reliability with the little cost, then evaluate the error to get an acceptable retry frequency. 
 
 ### Limitations/Weaknesses 
 <!-- [up to 2 weaknesses] -->
 
-The paper mainly focuses on the end-to-end argument against the low-level function implementation. However, it is not always true. More applications and conditions should be taken into account to decide whether layers are organized properly. For instance, flow control is end-to-end while congestion control is not. 
+- Designing exokernel interfaces is complex (implementation is not).
+- The exokernel can be less consistency.
+
+
 
 ### Summary of Key Results 
 <!-- [Up to 3 results] -->
 
-- Low-level function implementation may cause potential risks and can be less efficient under certain cases.
-- "End-to-end arguments" serve as a new design principle that could improve performance in distributed system design, e.g. reliability file transfer system, delivery guarantees, secure transmission of data, duplicate message suppression, guaranteeing FIFO message delivery and transaction management.
-
+- Due to the simplicity and limited number of exokernel primitives, they are fast and can be implemented efficiently.
+- Low-level, secure multiplexing of hardware resources and operating system abstractions at application level can also be implemented efficiently.
+- Applications can implement purpose-specific abstractions to enhance flexibility and functionality.
 
 ### Open Questions 
 <!-- [Where to go from here?] -->
 
-End-to-end arguments are only parts of the rational principles for organizing layered systems. Questions about the proper organization, specific criteria, different applications, are still open to discuss.
+The problem of consistency caused by different development of applications needs to be solved. Also, more detailed design of the low-level interface that communicates with hardware directly is open to discuss.
+
