@@ -6,41 +6,38 @@
 
 ### The Problem
 <!-- [A single problem] -->
-People at that time were obsessed with "layered" systems and tend to implement redundant functions all in low-level or subsystems, thinking that performing functions at lower-level will be more efficient. However, several examples and reasons suggest that it might not be the case. Hence, how those functions should be assigned to layers need further rational principles. 
-
+The author wanted to create a name service such that every individual, organization or facility all over the world can be mapped into a set of labeled properties to 
+assist authentication, mail addressing, resource location, etc. The requirements and challenges of that are high availability, large size, long life/continuing evolution, fault isolation and lack of global trust.
 
 ### Summary 
 <!-- [Up to 3 sentences] -->
 
-Saltzer, Reed and Clark in their paper proposed a new design principle to guide function placement in a distributed computer system, called the "end-to-end arguments", which is against the traditional low-level function implementation. They pointed out the potential risks of low-level function implementation, especially in the reliable file transfer system and suggested that end-to-end application level function implementation can be more beneficial. More generally, one should assign functions to proper layers according to the application requirements. 
+Butler W. Lampson in his talk proposed the design of a Global Name Service, which basically employs a hierarchical structure, composed of a tree of directories holding a tree of values. The names are thus also structured such that they can expand and evolve. The hierarchical structure facilitates growth and isolating faults and the provisions and methods are specified to enhance stability, non-deterministic lookup and authentication without global trust.
 
 ### Key Insights 
 <!-- [Up to 2 insights] -->
 
-- From the caretaking aspect, implementing functions in the low-level may not be able to completely fulfill the requirements of the upper-level applications, causing potential failures or errors.
-- From the performance aspects, performing the function at low-level may cost more. Low-level may have redundant functions for applications that do not need them; also, the low-level subsystems are unaware of the need of higher level, thus cannot do the job efficiently.
+- The hierarchical structure is the fundamental method for accommodating growth and isolating faults.
 
 ### Notable Design Details/Strengths 
 <!-- [Up to 2 details/strengths] -->
 
-The authors took the file transfer system as an example to illustrate the importance of end-to-end application level function implementation.
+- The proposed global name service has a two-level structure. The client side includes a tree of directories. Each directory has a unique directory identifier (DI) and the leaves of the tree are organized into a tree of values. The client side has the functions of reading, updating, protection, authentication, etc. The administrative level not only sees the directories, but also directory copies (DC) storing on different servers. It enhances updating speed and reliability.
+- The name has two parts: the full name of directory name and the value in that directory. The name is not only easy to type just as in a file system but also easy to find since the directory has a unique root that is kept in all servers all over the world. 
 
-- For the file transfer system, the reliability is ensured by the end-to-end application level function realization, e.g. the checksum and retry/commit plan. Simply making the data communication subsystem reliable is not enough and will cause potential error during file transfer, like the transient error inside a host.
-- From the performance aspect, since the reliability is entirely ensured by the application layer, spending efforts on any point below application level can be less efficient when designing a reliable file transfer system. One should first try to realize a communication system providing reliability with the little cost, then evaluate the error to get an acceptable retry frequency. 
 
 ### Limitations/Weaknesses 
 <!-- [up to 2 weaknesses] -->
 
-The paper mainly focuses on the end-to-end argument against the low-level function implementation. However, it is not always true. More applications and conditions should be taken into account to decide whether layers are organized properly. For instance, flow control is end-to-end while congestion control is not. 
+The article mainly focuses on the implementation and structure of the Global Name Service. The application is seldom mentioned. We do not know if it applies to the real-life application and how is the performance. 
 
 ### Summary of Key Results 
 <!-- [Up to 3 results] -->
 
-- Low-level function implementation may cause potential risks and can be less efficient under certain cases.
-- "End-to-end arguments" serve as a new design principle that could improve performance in distributed system design, e.g. reliability file transfer system, delivery guarantees, secure transmission of data, duplicate message suppression, guaranteeing FIFO message delivery and transaction management.
-
+- The article suggest a hierarchical design of Global Name Service that addressses the problem of high availability, large size, long life/continuing evolution, and  fault isolation
+- Detailed provisions and specifications are introduced to solve the problem of non-deterministic lookup and lack of global trust. 
 
 ### Open Questions 
 <!-- [Where to go from here?] -->
 
-End-to-end arguments are only parts of the rational principles for organizing layered systems. Questions about the proper organization, specific criteria, different applications, are still open to discuss.
+What other applications the system can have? How is the performance? What are the new challenges the design will face? 
