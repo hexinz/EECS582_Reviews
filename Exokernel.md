@@ -33,7 +33,7 @@ Dawson R. Engler, M. Frans Kaashoek, and James O’Toole Jr. designed a new oper
 
 <!-- - Designing exokernel interfaces is complex (implementation is not). -->
 <!-- - The exokernel can be less consistency. -->
-- For single-computer system, performance improvements would be great. However, for large-scale systems, it might not be worth it to switch from complex software to more hardware. The design philosophy is hard to scale across other forms of hardware or new hardware technology.
+- For single-computer system, performance improvements would be great. However, for large-scale systems, it might not be worth it to switch from complex software to more hardware. The design philosophy is hard to scale across other forms of hardware or new hardware technology. The simplified interface of Exokernel itself, once determined, is easier to implement than monolithic kernel. But if taking the application implementation into consideration, then complexity is usually considered a drawback.
 - Downloading code ino the kernel might not be safe even with Application-specific Safe Handlers (ASHs).
 
 
