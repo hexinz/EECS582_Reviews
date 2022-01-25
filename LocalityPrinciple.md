@@ -25,7 +25,7 @@ In purpose of solving the thrashing problem, Peter J. Denning in the article def
 
 ### Limitations/Weaknesses 
 <!-- [up to 2 weaknesses] -->
-- It was not strictly proved why "locality" happens. Will there be any other reasons?
+It was not strictly proved why "locality" happens. Will there be any other reasons?
 
 ### Summary of Key Results 
 <!-- [Up to 3 results] -->
@@ -35,6 +35,6 @@ In purpose of solving the thrashing problem, Peter J. Denning in the article def
 
 ### Open Questions 
 <!-- [Where to go from here?] -->
-- Peter J. Denning mentioned a lot future uses of locality principle. I would like to see more detailed explanation of these applications in the future.
+Peter J. Denning mentioned a lot future uses of locality principle. I would like to see more detailed explanation of these applications in the future.
 
 
