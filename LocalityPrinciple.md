@@ -1,5 +1,4 @@
 # [The Locality Principle](http://denninginstitute.com/pjd/PUBS/CACMcols/cacmJul05.pdf)
-# [The Locality Principle](http://denninginstitute.com/pjd/PUBS/CACMcols/cacmJul05.pdf)
 ###### Hexin Zhang (hexinz@umich.edu)
 
 ---
