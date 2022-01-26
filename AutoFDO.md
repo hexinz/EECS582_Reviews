@@ -5,12 +5,14 @@
 
 ### The Problem
 <!-- [A single problem] -->
-The newly-developed virtual memory (at that time) helped manage memory and provid superier programming environment. However, it also faces the performance issues caused by selection of replacement algorithms, ways compilers grouping codes onto pages and thrashing due to heavy paging for multiprogramming. 
+Traditional FDO (feedback-directed optimization) is introduced to guide compiler optimization using information about the code’s runtime behavior. However, the traditional FDO is seldom adopted due to difficulties in maintaining a representative benchmark, storing and accessing logs for loadtesting and overhead of instrumentation under load.
+
 
 ### Summary 
 <!-- [Up to 3 sentences] -->
 
-In purpose of solving the thrashing problem, Peter J. Denning in the article defined "working set" to relect program's intrinsic memory demand and proposed a feedback control mechanism that if the working set does not fit the free space of memory, the program request activation will be deferred to a holding queue. He also introduced the term "locality" to describe the observation that programs tend to cluster into small subsets of pages with long phases. Later, he further defined locality as a "distance" from a processor to an object, taking on several meanings: temporal, spacial and cost, which is widely adopted in operating system, database, hardware architects, etc. 
+Dehao Chen, David Xinliang Li and Tipp Moseley proposed a new FDO, which is easy to enable.
+
 
 ### Key Insights 
 <!-- [Up to 2 insights] -->
