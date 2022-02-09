@@ -11,7 +11,7 @@ The speculative execution is vulnerable to "Spectre attacks", which takes advant
 ### Summary 
 <!-- [Up to 3 sentences] -->
 
-Kocher et al. in their paper implemented and analyzed a class of microarchitectural attacks called "Spectre attacks", which trick the processor to speculatively execute instrction sequences that would not appear in the correct program, to present the security problem of the speculative execution that is now widely-used in m modern processors.
+Kocher et al. in their paper implemented and analyzed a class of microarchitectural attacks called "Spectre attacks", which trick the processor to speculatively execute instruction sequences that would not appear in the correct program, to present the security problem of the speculative execution that is now widely-used in modern processors.
 
 
 ### Key Insights 
