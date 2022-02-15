@@ -7,3 +7,4 @@
 - [AutoFDO: Automatic Feedback-Directed Optimization for Warehouse-Scale Applications](AutoFDO.md)
 - [IX: A Protected Dataplane Operating System for High Throughput and Low Latency](IX.md)
 - [Spectre Attacks: Exploiting Speculative Execution](Spectre.md)
+- [Yesterday, my program worked. Today, it does not. Why?](Debugging.md)
