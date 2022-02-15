@@ -10,7 +10,7 @@ Suppose a program can run successfully. However, when changes are applied to the
 ### Summary 
 <!-- [Up to 3 sentences] -->
 
-Zeller proposed a delta debugging prototype, which can efficiently determines the minimal set of failure-inducing changes by looking at the differences under the assumption of monotony, unambiguity and consistency (sometimes even work for non-monotone or ambiguous configurations). The dd+ algorithm also successfully deal with the three scenarios where linear search is not applciable: interference, inconsistency can granularity. The dd+ algorithm also handle inconsistency to some extent and future work will be focus on automatically avoiding inconsistencies by exploiting domain knowledge.
+Zeller proposed a delta debugging prototype, which can efficiently determines the minimal set of failure-inducing changes by looking at the differences under the assumption of monotony, unambiguity and consistency (sometimes even work for non-monotone or ambiguous configurations). The dd+ algorithm also successfully deal with the three scenarios where linear search is not applicable: interference, inconsistency can granularity. The dd+ algorithm also handle inconsistency to some extent and future work will be focus on automatically avoiding inconsistencies by exploiting domain knowledge.
 
 ### Key Insights 
 <!-- [Up to 2 insights] -->
