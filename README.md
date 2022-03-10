@@ -8,3 +8,4 @@
 - [IX: A Protected Dataplane Operating System for High Throughput and Low Latency](IX.md)
 - [Spectre Attacks: Exploiting Speculative Execution](Spectre.md)
 - [Yesterday, my program worked. Today, it does not. Why?](Debugging.md)
+- [MapReduce: Simplified Data Processing on Large Clusters](MapReduce.md)
