@@ -10,22 +10,18 @@ Users of Bigtable complaints about difficuity in using for applications that hav
 ### Summary 
 <!-- [Up to 3 sentences] -->
 
-Spanner is Google’s scalable, multi-version, globally-distributed, and synchronously-replicated database, which primirily deals with managing cross-datacenter
-replicated data. The fact that Spanner assigns globally-meaningful commit timestamps to transactions, even though transactions may be distributed, make the API support important features including dynamically controlled replication configurations at a fine grain, external consistenct reads and writes and globally-consistent reads across the database at a timestamp, which also result in support for consistent backups, consistent MapReduce executions and atomic schema updates, all at global scale. Spanner also supports non-blocking reads in the past, and lock-free read-only transactions for performance improvement. 
+Spanner is Google’s scalable, multi-version, globally-distributed, and synchronously-replicated database, which primirily deals with managing cross-datacenter replicated data. The fact that Spanner assigns globally-meaningful commit timestamps to transactions, even though transactions may be distributed, make the API support important features including dynamically controlled replication configurations at a fine grain, external consistenct reads and writes and globally-consistent reads across the database at a timestamp, which also result in support for consistent backups, consistent MapReduce executions and atomic schema updates, all at global scale. Spanner also supports non-blocking reads in the past, and lock-free read-only transactions for performance improvement. 
 
 ### Key Insights 
 <!-- [Up to 2 insights] -->
-- Rationale 
+-  the linchpin of Spanner’s feature set is TrueTime. Reifying clock uncertainty in the time API makes it possible to build distributed systems with much stronger time semantics. In addition, as the underlying system enforces tighter bounds on clock uncertainty, the overhead of the stronger semantics decreases. Author suggests that we should no longer depend on loosely synchronized clocks and weak time APIs in designing distributed algorithms.
 
 
 ### Notable Design Details/Strengths 
 <!-- [Up to 2 details/strengths] -->
-- The new TrueTime API and its implementation enables automatical globally-meaningful commit timestamps to transactions even when distributed. The TrueTime exposes clock uncertainty, and the guarantees on Spanner’s timestamps depend on the bounds that the implementation provides: if the uncertainty is large, Spanner slows down to wait out that uncertainty. The TureTime reflect the serialization order and thus the API enables externally consistent (if a transaction T1 commits before another transaction T2 starts, then T1's commit timestamp is smaller than T2's) reads and writes, and globally-consistent reads across the database at a timestamp.
-- There is a strong use of data locality using the concept of buckets. Data are stored in tablets, which are also classified into different “buckets”. Applications can control the locality of data by carefully assigning keys to the data, thereby potentially lowering latency.
 
-Data are stored in tablets, which are also classified into different “buckets”. Applications can control the locality of data by carefully assigning keys to the data. This feature could potentially lower the latency (by choosing closer datacenters for storage);
-Dynamic controlled replication configuration might be helpful when the application is trying to change the data location or replication factors during the run.
-
+- The new TrueTime API and its implementation enables automatical globally-meaningful commit timestamps to transactions even when distributed. The TrueTime exposes clock uncertainty, and the guarantees on Spanner’s timestamps depend on the bounds that the implementation provides: if the uncertainty is large, Spanner slows down to wait out that uncertainty. The TureTime reflects the serialization order and thus the API enables externally consistent (if a transaction T1 commits before another transaction T2 starts, then T1's commit timestamp is smaller than T2's) reads and writes, and globally-consistent reads across the database at a timestamp.
+-  Data are stored in tablets, which is not necessarily lexicographically contiguous parition. Therefore, it is possible for a tablet container to colocate multiple buckets (direcotries) that are frequently accessed together. By carefully assigning keys to the data and moving data in the unit of buckets, applications can control the locality, thereby potentially lowering latency.
 
 
 ### Limitations/Weaknesses 
@@ -35,6 +31,8 @@ Dynamic controlled replication configuration might be helpful when the applicati
 
 ### Summary of Key Results 
 <!-- [Up to 3 results] -->
+- Spanner stores data in schematized semi-relational tables and version-ed; provides a SQL-based query language; 
+- Spanner supports features: 1) replications configuration can be dynamically controlled; 2) externally consistent read/write operations; both are enabled by the globally-assigned timestamps, and supported by the TrueTime API and its implementation;
 
 
 
