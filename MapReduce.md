@@ -11,28 +11,33 @@ In reality, there are always tasks that are conceptually straightforward, but du
 <!-- [Up to 3 sentences] -->
 
 In purpose of solving the above problem, Google Inc. designed a new abstraction that hides the complex details of parallelization, fault-tolerance, data distributionand load balancing in a library, and thus users only need to specify a map function and a reduce function in order to parallelize a simple computation. The interface as well as the implementation turns out be powerful since it enables automatic parallelization and distribution of large-scale computations, and achieves high performance on large clusters of commodity PCs as well.
+
 ### Key Insights 
 <!-- [Up to 2 insights] -->
-- Even without explicitly preplanning, programs tend to have a property called "locality", meaning that programs tend to "cluster references to small subsets of their pages for extended intervals". There are two reaasons. Temporal clustering may caused by "looping and executing within modules with private data" while the spacial clustering is due to "related values being grouped into arrays, sequences, modules, and other data structures".
-- The later defined "locality", which is as a "distance" (temporal, spacial and cost) from a processor to an object, is appliable in wide parts of computer systems including operating system, database, hardware architects, etc. 
+- The MapReduce framework depends on two systems for proper operation. The first is a distributed file system for storing input and output data from MapReduce programs. The second is a scheduling system for managing a cluster of machines.
+- To deal with the large amount of data, in the sorting task, if the amount of intermediate data is too large to fit in memory, an external sort is used. 
+
 
 ### Notable Design Details/Strengths 
 <!-- [Up to 2 details/strengths] -->
 
-- Builders of the Atlas computer system first simulated a large main memory with two main performance problems: translating addresses to locations; and replacing loaded pages. The first problem is caused by additional memory access (page table, then actual memory), but can be solved by using an addressing cache, or Translation Look-aside Buffer (TLB) which copies part of the page table into the CPU. For the replacement algorithm, It was not until 1960s that Belady concluded that the Least-recently used (LRU) policy is the consistently best performer.
-- For the thrashing problem occurring during multiprogramming, Peter J. Denning first defined "working set" as "the set of pages used during a fixed-length sampling window in the immediate past", reflecting "the process’s intrinsic memory demand". If the working set does not fit the free space of memory, the program will be defered to a queue. It was observed that programs tend to cluster into relatively small locality sets with long phases, which is later defined as "locality".
+The MapReduce library first splits input files into M pieces (controlled by users) copies the program as the master. then:
+- In the Map phase, each worker is assigned a map task and then the map function takes an input pair and produces a set of intermediate key/value pairs, the MapReduce library then groups together all intermediate value with the same intermediate key and passes the data to the Reduce phase. To be more specific, the intermediate values are buffered and periodically written to the disk, partitioned into R regions by the partitioning function and returns the location of these buffered pairs on the local disk back to the master, who later forwards these locations to the reduce workers.
+- In the Reduce phase, each worker is notified by the master about the data location and uses remote procedure calls to read the buffered data from the local disks of the map worker. When a reduce worker has read all intermediate data, it sorts the data by the intermediate keys because typically many different keys map to the same reduce task. The reduce worker iterates over the sorted intermediate data and for each unique intermediate key encountered, it passes the key and the corresponding set of intermediate values to the user’s Reduce function. The reduce function then takes in a intermediate key and a set of values for that key and outputs typically one value. 
 
 ### Limitations/Weaknesses 
 <!-- [up to 2 weaknesses] -->
-It was not strictly proved why "locality" happens. Will there be any other reasons?
+- Upon a master failure, current implementation aborts the MapReduce computation if the master fails. However, although the master failure is unlikely, we still want to figure out a better way to handle master failures.
 
 ### Summary of Key Results 
 <!-- [Up to 3 results] -->
-- The locality principle refers to the observation that programs tend to cluster into relatively small subsets of pages with long phases.
-- "Locality" is defined as a "distance" from a processor to an object, taking on several meanings: temporal, spacial and cost.
-- The locality principle is applicable to broad parts of computer system, including operating system, database, hardware architects, etc. 
+- The MapReduce framework simplifies parallelizing simple computation over a large amount of data by a map task and a reduce task. 
+- The MapReduce framework enables fault tolerance. For worker failure, since the results of a map worker are stored on local disk, if that machine goes down, the master is responsible for scheduling that piece of work on a new worker machine (Completed map tasks are re-executed). 
+-  Since network bandwidth is a scarce resource, authors apply the locality optimization, which allows to read data from local disks, and write a single copy of the intermediate data to local disk, saving network bandwidth.
 
 ### Open Questions 
 <!-- [Where to go from here?] -->
-Peter J. Denning mentioned a lot future uses of locality principle. I would like to see more detailed explanation of these applications in the future.
+I would like to see more optimization and applications of MapReduce in the future.
 
+### Reference
+[1] https://sookocheff.com/post/databases/mapreduce/
