@@ -5,43 +5,45 @@
 
 ### The Problem
 <!-- [A single problem] -->
-Users of Bigtable complaints about difficuity in using for applications that have complex, evolving schemas, or those that want strong consistency in the presence of wide-area replication. Spanner has also been motivated by the popularity of Megastore. Many applications at Google (e.g., Gmail, Picasa, Calendar, Android Market, and AppEngine) chose to use Megastore because of its semi-relational data model and synchronous replication, despite its poor write throughput.
+People in Google want to store and manage large-scale structured data. Also, multiple projects have a variety of demands for storing and managing data in terms of data size, latency, etc.
 
 ### Summary 
 <!-- [Up to 3 sentences] -->
 
-Spanner is Google’s scalable, multi-version, globally-distributed, and synchronously-replicated database, which primirily deals with managing cross-datacenter replicated data. The fact that Spanner assigns globally-meaningful commit timestamps to transactions, even though transactions may be distributed, make the API support important features including dynamically controlled replication configurations at a fine grain, external consistenct reads and writes and globally-consistent reads across the database at a timestamp, which also result in support for consistent backups, consistent MapReduce executions and atomic schema updates, all at global scale. Spanner also supports non-blocking reads in the past, and lock-free read-only transactions for performance improvement. 
+Bigtable is a distributed storage system, which built upon GFS to store log and data files and upon a lock service called Chubby, for managing large-scale structured data across thousands of commodity servers. Bigtable provides a simple model which allows clients to dynamically control over data layout and format and reason about the locality properties of data in the underlying storage. Bigtable also achieves flexibility, wide applicability, scalability, high-performance and high availability. 
+
 
 ### Key Insights 
 <!-- [Up to 2 insights] -->
--  the linchpin of Spanner’s feature set is TrueTime. Reifying clock uncertainty in the time API makes it possible to build distributed systems with much stronger time semantics. In addition, as the underlying system enforces tighter bounds on clock uncertainty, the overhead of the stronger semantics decreases. Author suggests that we should no longer depend on loosely synchronized clocks and weak time APIs in designing distributed algorithms.
 
+- The problem of master replicas consistency in the face of failure is addressed by using the Paxos algorithms. Moreover, master failures will not change the assignment of tablets to tablet servers.
+- Clients can prefetch more than one tablet when it reads from METADATA.
 
 ### Notable Design Details/Strengths 
 <!-- [Up to 2 details/strengths] -->
 
-- The new TrueTime API and its implementation enables automatical globally-meaningful commit timestamps to transactions even when distributed. The TrueTime exposes clock uncertainty, and the guarantees on Spanner’s timestamps depend on the bounds that the implementation provides: if the uncertainty is large, Spanner slows down to wait out that uncertainty. The TureTime reflects the serialization order and thus the API enables externally consistent (if a transaction T1 commits before another transaction T2 starts, then T1's commit timestamp is smaller than T2's) reads and writes, and globally-consistent reads across the database at a timestamp.
--  Data are stored in tablets, which is not necessarily lexicographically contiguous parition. Therefore, it is possible for a tablet container to colocate multiple buckets (direcotries) that are frequently accessed together. By carefully assigning keys to the data and moving data in the unit of buckets, applications can control the locality, thereby potentially lowering latency.
+-  The data model of a Bigtable is a sparse, distributed, persistent multi-dimensional sorted map, which is indexed by a row key, column key, and a timestamp; each value in the map is an uninterpreted array of bytes. The Bigtable API provides functions for creating and deleting tables and column families. It also provides functions for changing cluster, table, and column family metadata, such as access control rights. Hence, Bigtable provides simplicity and flexibility for clients.
+
+- The Chubby service consistes of five replicas, and only one of them is the master, which is mainly responsible for:
+  - assigning tablets to tablet servers (each row range for a table is called a tablet), 
+  - detecting the addition and expiration of tablet servers
+  - balancing tablet-server load
+  - garbaging collection of files in GFS. 
 
 
 ### Limitations/Weaknesses 
 <!-- [up to 2 weaknesses] -->
-- Spanner doesn't support the full SQL semantics thus has limited applications in Ads databases for example.
-- The write operations are still using Paxos for consensus, which provides strong consistency at the cost of increasing latency and troublesome with master failure.
+- Bigtable uses different systems and applications: GFS is the low level file storage solution, SSTable is the actually data structure, Chubby is responsible for metadata, cluster management and the stats monitoring. However, usage of multiple system and applications will lead to large overhead and complexity in maintenance.
+
 
 ### Summary of Key Results 
 <!-- [Up to 3 results] -->
-- Spanner stores data in schematized semi-relational tables and version-ed; provides a SQL-based query language; 
-- Spanner supports features: 1) replications configuration can be dynamically controlled; 2) externally consistent read/write operations; both are enabled by the globally-assigned timestamps, and supported by the TrueTime API and its implementation;
-
-
+- Bigtable provides a simple model which allows clients to dynamically control over data layout and format and reason about the locality properties of data in the underlying storage. 
+- Bigtable achieves flexibility, wide applicability, scalability, high-performance and high availability. 
 
 ### Open Questions 
 <!-- [Where to go from here?] -->
-- How to deal with clock failure or incorrect working of clocks in local machines?
-- How is the performance of Spanner for advanced relational DB operations like JOINs?
-- How to improve writing performance and timestamp accuracy (sometimes just waiting for TT.after to be true)?
+How to solve the overhead caused by using multiple different systems and applications?
 
 ### Reference
-[1] http://muratbuffalo.blogspot.com/2013/07/spanner-googles-globally-distributed_4.html
-[2] https://souptikji.github.io/blog/2018/03/Spanner
+[1] https://xduan7.com/2016/01/31/paper-review-bigtable-a-distributed-storage-system-for-structured-data/
