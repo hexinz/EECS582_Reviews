@@ -5,41 +5,41 @@
 
 ### The Problem
 <!-- [A single problem] -->
-Users of Bigtable complaints about difficuity in using for applications that have complex, evolving schemas, or those that want strong consistency in the presence of wide-area replication. Spanner has also been motivated by the popularity of Megastore. Many applications at Google (e.g., Gmail, Picasa, Calendar, Android Market, and AppEngine) chose to use Megastore because of its semi-relational data model and synchronous replication, despite its poor write throughput.
+Two common concerns for finding bugs on real applications are 
+- the exponential number of paths through code and 
+- the challenges in handling code that interacts with its surrounding environment, such as the operating system, the network, or the user (colloquially: “the environment problem”).
 
 ### Summary 
 <!-- [Up to 3 sentences] -->
 
-Spanner is Google’s scalable, multi-version, globally-distributed, and synchronously-replicated database, which primirily deals with managing cross-datacenter replicated data. The fact that Spanner assigns globally-meaningful commit timestamps to transactions, even though transactions may be distributed, make the API support important features including dynamically controlled replication configurations at a fine grain, external consistenct reads and writes and globally-consistent reads across the database at a timestamp, which also result in support for consistent backups, consistent MapReduce executions and atomic schema updates, all at global scale. Spanner also supports non-blocking reads in the past, and lock-free read-only transactions for performance improvement. 
+KLEE is a new symbolic execution tool, which uses search heuristics to automatically generate tests to get high coverage and is also capable of dealing with external environment. After using KLEE to check 452 applications with over 530K lines of code, KLEE found 56 serious bugs, including ten in COREUTILS. KLEE works well across a broad range of real applications and achieved coverage of 90% of the code.
+
 
 ### Key Insights 
 <!-- [Up to 2 insights] -->
--  the linchpin of Spanner’s feature set is TrueTime. Reifying clock uncertainty in the time API makes it possible to build distributed systems with much stronger time semantics. In addition, as the underlying system enforces tighter bounds on clock uncertainty, the overhead of the stronger semantics decreases. Author suggests that we should no longer depend on loosely synchronized clocks and weak time APIs in designing distributed algorithms.
 
+- KLEE optimized constraint solving, which dominates everything else, in following ways: 1) Expression rewriting; 2) Constraint Set Simplification.; 3) Implied Value Concretization; 4) Constraint Independence; and 5) Counter-example Cache.
+- The core of KLEE is an interpreter loop which selects a state to run and then symbolically executes a single instruction in the context of that state. The loop will continue until there is no state remains or reaches the maximum execution time.
 
 ### Notable Design Details/Strengths 
 <!-- [Up to 2 details/strengths] -->
 
-- The new TrueTime API and its implementation enables automatical globally-meaningful commit timestamps to transactions even when distributed. The TrueTime exposes clock uncertainty, and the guarantees on Spanner’s timestamps depend on the bounds that the implementation provides: if the uncertainty is large, Spanner slows down to wait out that uncertainty. The TureTime reflects the serialization order and thus the API enables externally consistent (if a transaction T1 commits before another transaction T2 starts, then T1's commit timestamp is smaller than T2's) reads and writes, and globally-consistent reads across the database at a timestamp.
--  Data are stored in tablets, which is not necessarily lexicographically contiguous parition. Therefore, it is possible for a tablet container to colocate multiple buckets (direcotries) that are frequently accessed together. By carefully assigning keys to the data and moving data in the unit of buckets, applications can control the locality, thereby potentially lowering latency.
-
+- KLEE deal with external environment by doing environment modeling by redirecting library calls that access the external environment to *models* that understand the semantics of the desired action and then generate the required constraints. These models are written in normal C code so tht the user can readily customize, extend, or even replace without having to understand the internals of KLEE.
 
 ### Limitations/Weaknesses 
 <!-- [up to 2 weaknesses] -->
-- Spanner doesn't support the full SQL semantics thus has limited applications in Ads databases for example.
-- The write operations are still using Paxos for consensus, which provides strong consistency at the cost of increasing latency and troublesome with master failure.
+- Symbolically execution is slow due to interpreter loop and cannot be used for loops. Despite using search heuristics, it is still hard to handle path exposion for a complex program.
 
 ### Summary of Key Results 
 <!-- [Up to 3 results] -->
-- Spanner stores data in schematized semi-relational tables and version-ed; provides a SQL-based query language; 
-- Spanner supports features: 1) replications configuration can be dynamically controlled; 2) externally consistent read/write operations; both are enabled by the globally-assigned timestamps, and supported by the TrueTime API and its implementation;
+- KLEE is a new symbolic execution tool, which uses search heuristics to automatically generate tests to get high coverage and is also capable of dealing with external environment.
+- After using KLEE to check 452 applications with over 530K lines of code, KLEE found 56 serious bugs, including ten in COREUTILS. 
+- KLEE works well across a broad range of real applications and achieved coverage of 90% of the code.
 
 
 
 ### Open Questions 
 <!-- [Where to go from here?] -->
-- How to deal with clock failure or incorrect working of clocks in local machines?
-- How is the performance of Spanner for advanced relational DB operations like JOINs?
-- How to improve writing performance and timestamp accuracy (sometimes just waiting for TT.after to be true)?
+- Extend KLEE so that it could also be applied to multithreading programs.
 
 
