@@ -5,40 +5,38 @@
 
 ### The Problem
 <!-- [A single problem] -->
-Users of Bigtable complaints about difficuity in using for applications that have complex, evolving schemas, or those that want strong consistency in the presence of wide-area replication. Spanner has also been motivated by the popularity of Megastore. Many applications at Google (e.g., Gmail, Picasa, Calendar, Android Market, and AppEngine) chose to use Megastore because of its semi-relational data model and synchronous replication, despite its poor write throughput.
+It is challenging to write Persistent Memory applications that are both correct and efficient. It is likely that PM applications contain some correctness and performance bugs. However, current bug-detecting tools for PM applications have low bug coverage and rely on developer annotations and need extensive test cases that take long time to finish.
 
 ### Summary 
 <!-- [Up to 3 sentences] -->
 
-Spanner is Google’s scalable, multi-version, globally-distributed, and synchronously-replicated database, which primirily deals with managing cross-datacenter replicated data. The fact that Spanner assigns globally-meaningful commit timestamps to transactions, even though transactions may be distributed, make the API support important features including dynamically controlled replication configurations at a fine grain, external consistenct reads and writes and globally-consistent reads across the database at a timestamp, which also result in support for consistent backups, consistent MapReduce executions and atomic schema updates, all at global scale. Spanner also supports non-blocking reads in the past, and lock-free read-only transactions for performance improvement. 
+Neal at el. proposed a new generic and extensible system called AGAMOTTO, which uses a state space exploration algorithm and symbolically executes PM system to discover misuse of persistent memory in PM applications. Besides, a new symbolic memory model is introduced to check whether or not PM state has been made persistent. AGAMOTTO has successfully identified 84 new bugs in 5 benchmark PM applications.
 
 ### Key Insights 
 <!-- [Up to 2 insights] -->
--  the linchpin of Spanner’s feature set is TrueTime. Reifying clock uncertainty in the time API makes it possible to build distributed systems with much stronger time semantics. In addition, as the underlying system enforces tighter bounds on clock uncertainty, the overhead of the stronger semantics decreases. Author suggests that we should no longer depend on loosely synchronized clocks and weak time APIs in designing distributed algorithms.
-
+-  PM application bugs can be catagorized into correctness bugs (lead to data corruption), performance problems and application-specific bugs. The missing fences/flush can lead to both correctness and performance problems and accounts for 50/63 bugs; extra fences/flush only leads to performance downgrade and accounts for 6/63 bugs; the rest 7/63 bugs are application-specific bugs.
+- AGAMOTTO tracks persistent memory allocations from the system level and tracks Persistent Memory State. Then, AGAMOTTO prioritizes exploring program states that are most likely to modify persistent memory using a PM-aware search algorithm, which is efficient.
 
 ### Notable Design Details/Strengths 
 <!-- [Up to 2 details/strengths] -->
-
-- The new TrueTime API and its implementation enables automatical globally-meaningful commit timestamps to transactions even when distributed. The TrueTime exposes clock uncertainty, and the guarantees on Spanner’s timestamps depend on the bounds that the implementation provides: if the uncertainty is large, Spanner slows down to wait out that uncertainty. The TureTime reflects the serialization order and thus the API enables externally consistent (if a transaction T1 commits before another transaction T2 starts, then T1's commit timestamp is smaller than T2's) reads and writes, and globally-consistent reads across the database at a timestamp.
--  Data are stored in tablets, which is not necessarily lexicographically contiguous parition. Therefore, it is possible for a tablet container to colocate multiple buckets (direcotries) that are frequently accessed together. By carefully assigning keys to the data and moving data in the unit of buckets, applications can control the locality, thereby potentially lowering latency.
-
-
+- AGAMOTTA aims to achieve four high-level design principles:
+  - Automation. AGAMOTTO aims to automate in order to reduce user annotation as much as possible. AGAMOTTO could generate basic test cases to explore execution paths in an application.
+  - Generality. AGAMOTTO can test any PM application.
+  - High Accuracy. AGAMOTTO aims to report no false positives.
+  - Extensibility. AGAMOTTO can be easily extended to find application-specific bugs.
+ - AGAMOTTO not only provides two built-in Universal Peristency Bug Oracles, which check for bugs automatically based on the patterns that have already been identified, but also allows developers to specify custom, application-specific persistency bug oracles.
+  
 ### Limitations/Weaknesses 
 <!-- [up to 2 weaknesses] -->
-- Spanner doesn't support the full SQL semantics thus has limited applications in Ads databases for example.
-- The write operations are still using Paxos for consensus, which provides strong consistency at the cost of increasing latency and troublesome with master failure.
+- More bugs could be found and the time spending finding bugs can be optimized.
 
 ### Summary of Key Results 
 <!-- [Up to 3 results] -->
-- Spanner stores data in schematized semi-relational tables and version-ed; provides a SQL-based query language; 
-- Spanner supports features: 1) replications configuration can be dynamically controlled; 2) externally consistent read/write operations; both are enabled by the globally-assigned timestamps, and supported by the TrueTime API and its implementation;
-
-
+- AGAMOTTO uses novel state exploration algorithm to symbolically execute PM system to detect bugs in real-life PM applications without user annotation and extensive test suite.
+- A new symbolic memory model is introduced to check whether or not PM state has been made persistent.
+- AGAMOTTO has successfully identified 84 new bugs in 5 benchmark PM applications and libraries.
 
 ### Open Questions 
 <!-- [Where to go from here?] -->
-- How to deal with clock failure or incorrect working of clocks in local machines?
-- How is the performance of Spanner for advanced relational DB operations like JOINs?
-- How to improve writing performance and timestamp accuracy (sometimes just waiting for TT.after to be true)?
+- What is the reason why some bugs cannot be detected by AGAMOTTO? How to solve it?
 
