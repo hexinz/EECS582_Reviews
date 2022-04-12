@@ -10,13 +10,13 @@ People in Amazon want to solve the reliability problem at massive scale: tens of
 
 ### Summary 
 <!-- [Up to 3 sentences] -->
-DeCandia et al. proposed Dynamo, which is a novel highly available key-value storage system that sacrifices consistency under certain failures to provide an always-reliable experience for Amazon's core services. Dynamo takes advantage of consistent hashing for data partitioning and replicating, object versioning to facilitate consistency, application-assisted conflict resolution (a quorum-like technique and a decentralized replica synchronization protocol) to maintain consistency among replicas during updates as well as a gossip based distributed failure detection and membership protocol. Dynamo also has the flexibility to remove or add storage nodes without manual partitioning or redistribution since it is a complete decentralized system with miinimal need for manual administration.
+DeCandia et al. proposed Dynamo, which is a novel highly available key-value storage system that sacrifices consistency under certain failures to provide an always-reliable experience for Amazon's core services. Dynamo takes advantage of consistent hashing for data partitioning and replicating, object versioning to facilitate consistency, application-assisted conflict resolution (a quorum-like technique and a decentralized replica synchronization protocol) to maintain consistency among replicas during updates as well as a gossip based distributed failure detection and membership protocol. Dynamo also has the flexibility to remove or add storage nodes without manual partitioning or redistribution since it is a complete decentralized system with minimal need for manual administration.
 
 ### Key Insights 
 <!-- [Up to 2 insights] -->
 - Design considerations of Dynamo:
   - Optimistic replication techniques increase availbility but add burden on conflicts resolution.
-  - To decide when to perform the process of resolving update conflicts, which usually happens during reads or writes, since users don't want write to be rejected only because data cannot reach all the replicas at a given time, designers push the complxity of conflict resolution to the reads instead.
+  - To decide when to perform the process of resolving update conflicts, which usually happens during reads or writes, since users don't want write to be rejected only because data cannot reach all the replicas at a given time, designers push the complexity of conflict resolution to the reads instead.
   - To decide who to perform the process of resolving update conflicts, since application is aware of the data schema, it could tailor the conflict resolution method instead of only using simple policies like "last write wins" in the data store.
 - Other design principles of Dynamo:
   - Incremental scalability
