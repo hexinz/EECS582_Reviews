@@ -14,3 +14,4 @@
 - [KLEE: Unassisted and Automatic Generation of High-Coverage Tests for Complex Systems Programs](Klee.md)
 - [Agamotto: How Persistent is your Persistent Memory Application?](PM.md)
 - [Just-in-Time Compilation for Verilog](Cascade.md)
+- [Dynamo: Amazon’s Highly Available Key-value Store](Dynamo.md)
