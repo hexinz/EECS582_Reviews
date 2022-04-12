@@ -5,42 +5,40 @@
 
 ### The Problem
 <!-- [A single problem] -->
-People in Google want to store and manage large-scale structured data. Also, multiple projects have a variety of demands for storing and managing data in terms of data size, latency, etc.
+People in Amazon want to solve the reliability problem at massive scale: tens of thousands of servers and network components located in many datacenters around the world where small and large components fail continuously.
+
 
 ### Summary 
 <!-- [Up to 3 sentences] -->
-
-Bigtable is a distributed storage system, which built upon GFS to store log and data files and upon a lock service called Chubby, for managing large-scale structured data across thousands of commodity servers. Bigtable provides a simple model which allows clients to dynamically control over data layout and format and reason about the locality properties of data in the underlying storage. Bigtable also achieves flexibility, wide applicability, scalability, high-performance and high availability. 
-
+DeCandia et al. proposed Dynamo, which is a novel highly available key-value storage system that sacrifices consistency under certain failures to provide an always-reliable experience for Amazon's core services. Dynamo takes advantage of consistent hashing for data partitioning and replicating, object versioning to facilitate consistency, application-assisted conflict resolution (a quorum-like technique and a decentralized replica synchronization protocol) to maintain consistency among replicas during updates as well as a gossip based distributed failure detection and membership protocol. Dynamo also has the flexibility to remove or add storage nodes without manual partitioning or redistribution since it is a complete decentralized system with miinimal need for manual administration.
 
 ### Key Insights 
 <!-- [Up to 2 insights] -->
-
-- The problem of master replicas consistency in the face of failure is addressed by using the Paxos algorithms. Moreover, master failures will not change the assignment of tablets to tablet servers.
-- Clients can prefetch more than one tablet when it reads from METADATA.
+- Design considerations of Dynamo:
+  - Optimistic replication techniques increase availbility but add burden on conflicts resolution.
+  - To decide when to perform the process of resolving update conflicts, which usually happens during reads or writes, since users don't want write to be rejected only because data cannot reach all the replicas at a given time, designers push the complxity of conflict resolution to the reads instead.
+  - To decide who to perform the process of resolving update conflicts, since application is aware of the data schema, it could tailor the conflict resolution method instead of only using simple policies like "last write wins" in the data store.
+- Other design principles of Dynamo:
+  - Incremental scalability
+  - Symmetry
+  - Decentralization
+  - Heterogeneity
 
 ### Notable Design Details/Strengths 
 <!-- [Up to 2 details/strengths] -->
-
--  The data model of a Bigtable is a sparse, distributed, persistent multi-dimensional sorted map, which is indexed by a row key, column key, and a timestamp; each value in the map is an uninterpreted array of bytes. The Bigtable API provides functions for creating and deleting tables and column families. It also provides functions for changing cluster, table, and column family metadata, such as access control rights. Hence, Bigtable provides simplicity and flexibility for clients.
-
-- The Chubby service consistes of five replicas, and only one of them is the master, which is mainly responsible for:
-  - assigning tablets to tablet servers (each row range for a table is called a tablet), 
-  - detecting the addition and expiration of tablet servers
-  - balancing tablet-server load
-  - garbaging collection of files in GFS. 
-
+-  Dynamo introduces a novel API such that by providing the necessary knobs using the three parameters of (N,R,W), users are able to tune parameters based on their needs to customize their storage system to meet their desired performance, durability and consistency SLAs.
+-  Dynamo adopts a full membership model where each node is aware of the data hosted by its peers by each node actively gossips the full routing table with other nodes in the system.
 
 ### Limitations/Weaknesses 
 <!-- [up to 2 weaknesses] -->
-- Bigtable uses different systems and applications: GFS is the low level file storage solution, SSTable is the actually data structure, Chubby is responsible for metadata, cluster management and the stats monitoring. However, usage of multiple system and applications will lead to large overhead and complexity in maintenance.
-
+- Dynamo's initial design targets a scale of up to hundreds of storage hosts. Hence it may have scalability limitations problem.
 
 ### Summary of Key Results 
 <!-- [Up to 3 results] -->
-- Bigtable provides a simple model which allows clients to dynamically control over data layout and format and reason about the locality properties of data in the underlying storage. 
-- Bigtable achieves flexibility, wide applicability, scalability, high-performance and high availability. 
+- Dynamo is a novel highly available and scalable key-value storage system that is used for storing state of a number of core services of Amazon’s e-commerce platform.
+- Dynamo takes advantage of a series of techniques to achieve availability, performance and handle server failures, data center failures and network partitions as well as allow users to scale up and down according to their current request load.
+- Dynamo also has the flexibility for servie owners to customize their storage system by providing the necessary knobs using the three parameters of (N,R,W) to tune the parameters.
 
 ### Open Questions 
 <!-- [Where to go from here?] -->
-How to solve the overhead caused by using multiple different systems and applications?
+In the future, the limitation on scale due to the adoption of a full membership model can be solved by introducing hierarchical extensions to Dynamo. How could we do that in detail?
