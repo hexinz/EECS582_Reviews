@@ -5,12 +5,10 @@
 
 ### The Problem
 <!-- [A single problem] -->
-In reality, there are always tasks that are conceptually straightforward, but due to the latge amount of imput data, we have to parallelize the computation, distribute the data, and handle failures, making originally simple computation complicated.
-
+Nowadays, AI applications impose more and more new and demanding systems requirements, which adds burden to both performance and flexibility.
 ### Summary 
 <!-- [Up to 3 sentences] -->
 
-In purpose of solving the above problem, Google Inc. designed a new abstraction that hides the complex details of parallelization, fault-tolerance, data distributionand load balancing in a library, and thus users only need to specify a map function and a reduce function in order to parallelize a simple computation. The interface as well as the implementation turns out be powerful since it enables automatic parallelization and distribution of large-scale computations, and achieves high performance on large clusters of commodity PCs as well.
 
 ### Key Insights 
 <!-- [Up to 2 insights] -->
