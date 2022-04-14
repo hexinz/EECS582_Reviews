@@ -6,33 +6,41 @@
 ### The Problem
 <!-- [A single problem] -->
 Nowadays, AI applications impose more and more new and demanding systems requirements, which adds burden to both performance and flexibility.
+
 ### Summary 
 <!-- [Up to 3 sentences] -->
-
+Moritz at el. proposed Ray, a distributed system that has a unified interface for both task-parallel and actor-based computations, which are supported by a single dynamic execution engine. Ray also employs a distributed scheduler and a distributed and fault-tolerant store to manage the system’s control state. According to the experiment, Ray achieves 1.8 million tasks per second and has better performance than existing systems over challenging reinforcement learning applications.
 
 ### Key Insights 
 <!-- [Up to 2 insights] -->
-- The MapReduce framework depends on two systems for proper operation. The first is a distributed file system for storing input and output data from MapReduce programs. The second is a scheduling system for managing a cluster of machines.
-- To deal with the large amount of data, in the sorting task, if the amount of intermediate data is too large to fit in memory, an external sort is used. 
-
+- A framework for RL applications must provide efficient support for training, serving, and simulation. In addition, such a framework should also satisfy the following requirements:
+  - Fine-grained, heterogeneous computations.
+  - Flexible computation model.
+  - Dynamic execution.
+- Finally, to achieve high utilization in large clusters, such a framework must handle millions of tasks per. Also, such a framework should enable seamless integration with existing simulators and deep learning frameworks.
 
 ### Notable Design Details/Strengths 
 <!-- [Up to 2 details/strengths] -->
-
-The MapReduce library first splits input files into M pieces (controlled by users) copies the program as the master. then:
-- In the Map phase, each worker is assigned a map task and then the map function takes an input pair and produces a set of intermediate key/value pairs, the MapReduce library then groups together all intermediate value with the same intermediate key and passes the data to the Reduce phase. To be more specific, the intermediate values are buffered and periodically written to the disk, partitioned into R regions by the partitioning function and returns the location of these buffered pairs on the local disk back to the master, who later forwards these locations to the reduce workers.
-- In the Reduce phase, each worker is notified by the master about the data location and uses remote procedure calls to read the buffered data from the local disks of the map worker. When a reduce worker has read all intermediate data, it sorts the data by the intermediate keys because typically many different keys map to the same reduce task. The reduce worker iterates over the sorted intermediate data and for each unique intermediate key encountered, it passes the key and the corresponding set of intermediate values to the user’s Reduce function. The reduce function then takes in a intermediate key and a set of values for that key and outputs typically one value. 
+- Ray’s architecture comprises an application layer implementing the API, and a system layer providing high scalability and fault tolerance.
+  - The application layer consists of three types of processes:
+    - Driver: A process executing the user program.
+    - Worker: A stateless process that executes tasks (remote functions) invoked by a driver or another worker.
+    - Actor: A stateful process that executes, when invoked, only the methods it exposes.
+  - The The system layer consists of three major components: a global control store, a distributed scheduler, and a distributed object store. All components are horizontally scalable and fault-tolerant.
+- Moritz at el. also designed a two-level hierarchical scheduler consisting of a global scheduler and per-node local schedulers that balances locality and latencies, and achieve high scale such that Ray can dynamically schedule millions of tasks per second. 
 
 ### Limitations/Weaknesses 
 <!-- [up to 2 weaknesses] -->
-- Upon a master failure, current implementation aborts the MapReduce computation if the master fails. However, although the master failure is unlikely, we still want to figure out a better way to handle master failures.
+- It is mentioned that Ray cannot substitute for serving systems like TensorFlow since Ray could not address model management, testing, and model composition. Also, Ray cannot substitute for generic data-parallel frameworks like Spark since it lacks rich functionality and APIs such as query optimization.
 
 ### Summary of Key Results 
 <!-- [Up to 3 results] -->
-- The MapReduce framework simplifies parallelizing simple computation over a large amount of data by a map task and a reduce task. 
-- The MapReduce framework enables fault tolerance. For worker failure, since the results of a map worker are stored on local disk, if that machine goes down, the master is responsible for scheduling that piece of work on a new worker machine (Completed map tasks are re-executed). 
--  Since network bandwidth is a scarce resource, authors apply the locality optimization, which allows to read data from local disks, and write a single copy of the intermediate data to local disk, saving network bandwidth.
+Moritz at el. made the following contributions: 
+- Design and build the first distributed framework that unifies training, simulation, and serving—necessary components of emerging RL applications.
+- Unify the actor and task-parallel abstractions on top of a dynamic task execution engine.
+- Propose a system design principle in which control state is stored in a sharded metadata store and all other system components are stateless and a bottom-up distributed scheduling strategy.
 
 ### Open Questions 
 <!-- [Where to go from here?] -->
-I would like to see more optimization and applications of MapReduce in the future.
+- How Ray can make scheduling decisions without full knowledge of the computation graph?
+- How to implementation of garbage collection policies to bound storage costs in the GCS?
